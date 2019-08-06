@@ -1,0 +1,13 @@
+name = "ImplicitPlots"
+uuid = "55ecb840-b828-11e9-1645-43f4a9f9ace7"
+authors = ["Sascha Timme <sascha.timme@gmail.com>"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
