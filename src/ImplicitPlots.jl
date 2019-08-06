@@ -1,6 +1,6 @@
 module ImplicitPlots
 
-export plot
+export implicit_plot
 
 import AbstractPlotting
 import ColorSchemes, Contour
@@ -21,11 +21,11 @@ compute_z(f::SP.Polynomial, rx, ry) = [f(SVector(x,y)) for x in rx, y in ry]
 compute_z(f::Function, rx, ry) = [f(x,y) for x in rx, y in ry]
 
 
-function plot(f::MP.AbstractPolynomialLike; scene_resolution=(1000,1000), kwargs...)
+function implicit_plot(f::MP.AbstractPolynomialLike; scene_resolution=(1000,1000), kwargs...)
     scene = AbstractPlotting.Scene(resolution=scene_resolution, scale_plot=false)
-    plot!(scene, f; kwargs...)
+    implicit_plot!(scene, f; kwargs...)
 end
-function plot!(scene, f::MP.AbstractPolynomialLike; wireframe=nothing, kwargs...)
+function implicit_plot!(scene, f::MP.AbstractPolynomialLike; wireframe=nothing, kwargs...)
     if MP.nvariables(f) == 2
         implicit_curve!(scene, f; kwargs...)
     else
