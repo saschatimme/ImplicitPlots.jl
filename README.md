@@ -12,7 +12,7 @@ using Makie # GLMakie backend
 
 @polyvar x y
 f =  (x^4 + y^4 - 1) * (x^2 + y^2 - 2) + x^5 * y
-implicit_plot(f)
+implicit_plot(f; x_min=-3., x_max=3., y_min=-4, y_max=4)
 ```
 
 ## Surface
