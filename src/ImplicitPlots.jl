@@ -11,14 +11,6 @@ import StaticArrays: SVector
 const MP = MultivariatePolynomials
 const SP = StaticPolynomials
 
-# import ColorSchemes, Contour
-# import DynamicPolynomials, HomotopyContinuation, StaticPolynomials
-# import StaticArrays: SVector
-# const DP = DynamicPolynomials
-# const HC = HomotopyContinuation
-# const SP = StaticPolynomials
-# using LinearAlgebra
-# using Makie, GeometryTypes, Meshing
 
 """
     compute_z(f, rx, ry)
