@@ -7,7 +7,7 @@ function implicit_plot(
     kwargs...,
 )
     scene = AbstractPlotting.Scene(resolution = scene_resolution, scale_plot = false)
-    implicit_plot!(p, f; kwargs...)
+    implicit_plot!(scene, f; kwargs...)
 end
 
 
@@ -29,9 +29,9 @@ function implicit_surface!(scene, f::MP.AbstractPolynomialLike; x_min=-3., x_max
     sdf = Meshing.SignedDistanceField(v -> g(v), box, mesh_resolution)
     m = Meshing.GLNormalMesh(sdf, Meshing.MarchingTetrahedra())
     if isnothing(wireframe) || !wireframe
-        AbstractPlotting.mesh!(scene, m, show_axis=show_axis, color=color, kwargs...)
+        AbstractPlotting.mesh!(scene, m; show_axis=show_axis, color=color, kwargs...)
     else
-        AbstractPlotting.wireframe!(scene, m, show_axis=show_axis, kwargs...)
+        AbstractPlotting.wireframe!(scene, m; show_axis=show_axis, kwargs...)
     end
 
     scene
