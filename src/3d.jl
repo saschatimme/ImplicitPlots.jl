@@ -3,6 +3,7 @@ import .AbstractPlotting
 function implicit_plot(
     f::MP.AbstractPolynomialLike,
     ::Val{3};
+    scene_resolution = (1000,1000),
     kwargs...,
 )
     scene = AbstractPlotting.Scene(resolution = scene_resolution, scale_plot = false)
