@@ -84,7 +84,7 @@ function implicit_curve!(
     # limits = AbstractPlotting.FRect(x_min, y_min, x_max - x_min, y_max - y_min)
     lvl = Contour.contour(x, y, z, 0.0)
     lines = Contour.lines(lvl)
-    !isempty(lines) || return scene
+    !isempty(lines) || return p
     for l in lines
         xs, ys = Contour.coordinates(l)
 
