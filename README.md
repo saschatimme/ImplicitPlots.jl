@@ -1,6 +1,6 @@
 # ImplicitPlots
 
-[![Build Status](https://travis-ci.com/saschatimme/ImplicitPlots.jl.svg?branch=master)](https://travis-ci.com/saschatimme/ImplicitPlots.jl)
+[![Build Status](https://travis-ci.org/saschatimme/ImplicitPlots.jl.svg?branch=master)](https://travis-ci.org/saschatimme/ImplicitPlots.jl)
 
 Plot plane curves and surfaces defined by a function `f(x,y)=0` resp. `f(x,y,z)=0`.
 
