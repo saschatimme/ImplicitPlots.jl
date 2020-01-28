@@ -42,7 +42,7 @@ function implicit_surface!(
     )
     sdf = Meshing.SignedDistanceField(v -> g(v...), box, mesh_resolution)
     m = Meshing.GLNormalMesh(sdf, Meshing.MarchingTetrahedra())
-    if isnothing(wireframe) || !wireframe
+    if wireframe === nothing || !wireframe
         AbstractPlotting.mesh!(scene, m; show_axis = show_axis, color = color, kwargs...)
     else
         AbstractPlotting.wireframe!(scene, m; show_axis = show_axis, kwargs...)
