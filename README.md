@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/saschatimme/ImplicitPlots.jl.svg?branch=master)](https://travis-ci.com/saschatimme/ImplicitPlots.jl)
 
-Plots curves and surfaces defined a function `f(x,y)=0` resp. `f(x,y,z)=0`.
+Plot plane curves and surfaces defined by a function `f(x,y)=0` resp. `f(x,y,z)=0`.
 
 ## Plane curves
 
