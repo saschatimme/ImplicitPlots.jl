@@ -1,4 +1,3 @@
-
 function implicit_plot(
     f,
     nargs::Val{2};
@@ -12,11 +11,10 @@ end
 implicit_plot!(p, f, nargs::Val{2}; kwargs...) = implicit_curve!(p, f; kwargs...)
 
 """
-    implicit_curve(f; x_min=-5, x_max=5, y_min=x_min, y_max=x_max,
-                      color_curvature=false, color=:steelblue, resolution=1000)
+    implicit_curve!(p, f; x_min=-5, x_max=5, y_min=x_min, y_max=x_max,
+                        color=:steelblue, resolution=1000)
+
 Visualize the implicit curve `f` in the box `[x_min, x_max] × [y_min, y_max]`.
-If `color_curvature` is `true` then the curve is locally colored depending on its curvature.
-Otherwise `color` is used.
 """
 function implicit_curve!(
     p,
@@ -31,7 +29,6 @@ function implicit_curve!(
     ymax = y_max,
     xlims = (xmin, xmax),
     ylims = (ymin, ymax),
-    color_curvature = false,
     color = :steelblue,
     resolution = 1000,
     linewidth = 2,
