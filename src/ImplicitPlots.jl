@@ -19,37 +19,52 @@ function __init__()
     @require AbstractPlotting = "537997a7-5e4e-5d89-9595-2241ea00577e" include("3d.jl")
 end
 
-"""
-    compute_z(f, rx, ry)
-Compute all values ``f(x,y)`` for ``(x,y) ∈ rx × ry``.
-"""
-compute_z(f::MP.AbstractPolynomialLike, rx, ry) = compute_z(SP.Polynomial(f), rx, ry)
-compute_z(f::SP.Polynomial, rx, ry) = [f(SVector(x, y)) for x in rx, y in ry]
-compute_z(f::Function, rx, ry) = [f(x, y) for x in rx, y in ry]
-
-function implicit_plot(f::MP.AbstractPolynomialLike; kwargs...)
-    implicit_plot(f, Val(MP.nvariables(f)); kwargs...)
-end
-
-function implicit_plot(
-    f::MP.AbstractPolynomialLike,
-    ::Val{2};
-    aspect_ratio = :equal,
-    size = (600, 600),
-    kwargs...,
-)
-    # scene = AbstractPlotting.Scene(resolution = scene_resolution, scale_plot = false)
-    p = Plots.plot(; aspect_ratio = aspect_ratio, size = size)
-    implicit_plot!(p, f; kwargs...)
-end
-
-function implicit_plot!(scene, f::MP.AbstractPolynomialLike; wireframe = nothing, kwargs...)
-    if MP.nvariables(f) == 2
-        implicit_curve!(scene, f; kwargs...)
+make_function(f::MP.AbstractPolynomialLike) = make_function(SP.Polynomial(f))
+function make_function(f::SP.Polynomial)
+    if SP.nvariables(f) == 2
+        (x,y) -> f(SVector(x, y))
+    elseif SP.nvariables(f) == 3
+        (x, y, z) -> f(SVector(x, y, z))
     else
-        implicit_surface!(scene, f; wireframe = wireframe, kwargs...)
+        throw(ArgumentError("Given polynomial is not in 2 or 3 variables."))
     end
 end
+make_function(f) = f
+
+nvariables(f::MP.AbstractPolynomialLike) = MP.nvariables(f)
+nvariables(f::SP.Polynomial) = SP.nvariables(f)
+function nvariables(f::Function)
+    nargs = 0
+    try
+        f(1.0, 1.0)
+        nargs = 2
+    catch e
+        try
+            f(1.0, 1.0, 1.0)
+            nargs = 3
+        catch e
+            throw(ArgumentError("Provided function does not accept 2 or 3 arguments."))
+        end
+    end
+    nargs
+end
+
+implicit_plot(f; kwargs...) = implicit_plot(f, Val(nvariables(f)); kwargs...)
+implicit_plot!(f; kwargs...) = implicit_plot!(nothing, f, Val(nvariables(f)); kwargs...)
+implicit_plot!(p, f; kwargs...) = implicit_plot!(p, f, Val(nvariables(f)); kwargs...)
+
+
+function implicit_plot(
+    f,
+    nargs::Val{2};
+    aspect_ratio = :equal,
+    size = (800, 800),
+    kwargs...,
+)
+    p = Plots.plot(; aspect_ratio = aspect_ratio, size = size)
+    implicit_curve!(p, f; kwargs...)
+end
+implicit_plot!(p, f, nargs::Val{2}; kwargs...) = implicit_curve!(p, f; kwargs...)
 
 """
     implicit_curve(f; x_min=-5, x_max=5, y_min=x_min, y_max=x_max,
@@ -60,13 +75,17 @@ Otherwise `color` is used.
 """
 function implicit_curve!(
     p,
-    f::MP.AbstractPolynomialLike;
+    f;
     x_min = -3.0,
+    xmin = x_min,
     x_max = 3.0,
+    xmax = x_max,
     y_min = x_min,
+    ymin = y_min,
     y_max = x_max,
-    xlims = (x_min, x_max),
-    ylims = (y_min, y_max),
+    ymax = y_max,
+    xlims = (xmin, xmax),
+    ylims = (ymin, ymax),
     color_curvature = false,
     color = :steelblue,
     resolution = 1000,
@@ -75,30 +94,42 @@ function implicit_curve!(
     legend = false,
     kwargs...,
 )
-    g = SP.Polynomial(f)
-    x = collect(range(xlims...; length = resolution))
-    y = collect(range(ylims...; length = resolution))
-    z = compute_z(f, x, y)
+    g = make_function(f)
+    rx = range(xlims...; length = resolution)
+    ry = range(ylims...; length = resolution)
+    z = [g(x, y) for x in rx, y in ry]
 
-
-    # limits = AbstractPlotting.FRect(x_min, y_min, x_max - x_min, y_max - y_min)
-    lvl = Contour.contour(x, y, z, 0.0)
+    lvl = Contour.contour(collect(rx), collect(ry), z, 0.0)
     lines = Contour.lines(lvl)
     !isempty(lines) || return p
+
     for l in lines
         xs, ys = Contour.coordinates(l)
 
-        Plots.plot!(
-            p,
-            xs,
-            ys;
-            xlims = xlims,
-            ylims = ylims,
-            color = color,
-            legend = legend,
-            linewidth = linewidth,
-            kwargs...,
-        )
+        if p === nothing
+            Plots.plot!(
+                xs,
+                ys;
+                xlims = xlims,
+                ylims = ylims,
+                color = color,
+                legend = legend,
+                linewidth = linewidth,
+                kwargs...,
+            )
+        else
+            Plots.plot!(
+                p,
+                xs,
+                ys;
+                xlims = xlims,
+                ylims = ylims,
+                color = color,
+                legend = legend,
+                linewidth = linewidth,
+                kwargs...,
+            )
+        end
     end
 
     p

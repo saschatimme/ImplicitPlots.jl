@@ -4,22 +4,29 @@
 
 Plots curves and surfaces defined by a polynomial `f(x,y)=0` resp. `f(x,y,z)=0`.
 
-## Curve in the plane
+## Plane curves
+
 ```julia
 using ImplicitPlots
-using DynamicPolynomials # input
 
+f(x,y) = (x^4 + y^4 - 1) * (x^2 + y^2 - 2) + x^5 * y
+implicit_plot(f; xlims=(-2,2), ylims=(-2,2))
+```
+<img src="images/example_curve.png" style="max-width:100%" width="400px"></img>
+
+Polynomials following the MultivariatePolynomials.jl interface are also supported.
+For convenience also the `@polyvar` macro from DynamicPolynomials.jl is exported.
+```julia
 @polyvar x y
-f =  (x^4 + y^4 - 1) * (x^2 + y^2 - 2) + x^5 * y
-implicit_plot(f; xlims=(-3,3) ymax=(-3,3))
+f2 = (x^4 + y^4 - 1) * (x^2 + y^2 - 2) + x^5 * y
+implicit_plot(f2; xlims=(-2,2), ylims=(-2,2))
 ```
 
 ## Surface
 
-For surfaces need to have `AbstractPlotting` installed.
+For surfaces you need to have a backend for `AbstractPlotting` installed.
 ```julia
 using ImplicitPlots
-using DynamicPolynomials # input
 using Makie # GLMakie backend for AbstractPlotting
 
 @polyvar x y z
