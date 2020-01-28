@@ -1,6 +1,6 @@
 name = "ImplicitPlots"
 uuid = "55ecb840-b828-11e9-1645-43f4a9f9ace7"
-authors = ["Sascha Timme <sascha.timme@gmail.com>"]
+authors = ["Sascha Timme <sascha@timme.xyz>"]
 version = "0.1.0"
 
 [deps]
