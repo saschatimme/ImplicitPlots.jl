@@ -37,8 +37,8 @@ function implicit_curve!(
     kwargs...,
 )
     g = make_function(f)
-    rx = range(xlims...; length = resolution)
-    ry = range(ylims...; length = resolution)
+    rx = range(xlims[1]; stop = xlims[2], length = resolution)
+    ry = range(ylims[1]; stop = ylims[2], length = resolution)
     z = [g(x, y) for x in rx, y in ry]
 
     lvl = Contour.contour(collect(rx), collect(ry), z, 0.0)
