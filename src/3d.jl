@@ -7,11 +7,10 @@ end
 implicit_plot!(p, f, ::Val{3}; kwargs...) = implicit_surface!(p, f; kwargs...)
 
 """
-    implicit_surface!(scene, f; x_min=-3, x_max=3, y_min=x_min, y_max=x_max, z_min=x_min, z_max=z_max,
-                      color_curvature=false, color=:steelblue, resolution=1000)
-Visualize the implicit curve `f` in the box `[x_min, x_max] × [y_min, y_max]`.
-If `color_curvature` is `true` then the curve is locally colored depending on its curvature.
-Otherwise `color` is used.
+    implicit_surface!(scene, f; xlims=(-3,3), ylims = xlims, zlims = xlims,
+                      color=:steelblue, resolution=1000)
+
+Visualize the implicit suface `f` in the box `[x_min, x_max] × [y_min, y_max] × [z_min, z_max]`.
 """
 function implicit_surface!(
     scene,
@@ -28,6 +27,9 @@ function implicit_surface!(
     zmin = z_min,
     z_max = xmax,
     zmax = z_max,
+    xlims = (xmin, xmax),
+    ylims = (ymin, ymax),
+    zlims = (zmin, zmax),
     color = :steelblue,
     show_axis = true,
     wireframe = false,
@@ -37,13 +39,23 @@ function implicit_surface!(
 )
     g = make_function(f)
     box = GeometryTypes.HyperRectangle(
-        AbstractPlotting.Vec(x_min, y_min, float(z_min)),
-        AbstractPlotting.Vec(float(x_max - x_min), y_max - y_min, z_max - z_min),
+        AbstractPlotting.Vec(xlims[1], ylims[1], float(zlims[1])),
+        AbstractPlotting.Vec(
+            float(xlims[2] - xlims[1]),
+            ylims[2] - ylims[1],
+            zlims[2] - zlims[1],
+        ),
     )
     sdf = Meshing.SignedDistanceField(v -> g(v...), box, mesh_resolution)
     m = Meshing.GLNormalMesh(sdf, Meshing.MarchingTetrahedra())
     if wireframe === nothing || !wireframe
-        AbstractPlotting.mesh!(scene, m; show_axis = show_axis, color = color, kwargs...)
+        AbstractPlotting.mesh!(
+            scene,
+            m;
+            show_axis = show_axis,
+            color = color,
+            kwargs...,
+        )
     else
         AbstractPlotting.wireframe!(scene, m; show_axis = show_axis, kwargs...)
     end
