@@ -1,7 +1,7 @@
 name = "ImplicitPlots"
 uuid = "55ecb840-b828-11e9-1645-43f4a9f9ace7"
 authors = ["Sascha Timme <sascha@timme.xyz>"]
-version = "0.1.2"
+version = "0.1.3"
 
 [deps]
 AbstractPlotting = "537997a7-5e4e-5d89-9595-2241ea00577e"
