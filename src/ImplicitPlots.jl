@@ -2,9 +2,9 @@ module ImplicitPlots
 
 export implicit_plot, implicit_plot!, implicit_curve!, implicit_surface!
 
-import AbstractPlotting
+# import AbstractPlotting
 import ColorSchemes, Contour
-import GeometryTypes, Meshing
+# import GeometryTypes, Meshing
 import Plots
 
 import MultivariatePolynomials, StaticPolynomials
@@ -61,15 +61,16 @@ f(x,y) = (x^4 + y^4 - 1) * (x^2 + y^2 - 2) + x^5 * y
 
 implicit_plot(f; xlims=(-2,2), ylims=(-2,2))
 ```
-
-Surface:
-```
-using Makie
-g(x,z,y) = (0.3*x^2+0.5z-0.3x+1.2*y^2-1.1)^2+(0.7*(y+0.5x)^2+y+1.2*z^2-1)^2-0.3
-implicit_plot(g; xlims=(-2,2), ylims=(-2,2), zlims=(-3,3))
-```
 """
 implicit_plot(f; kwargs...) = implicit_plot(f, Val(nvariables(f)); kwargs...)
+
+# 
+# Surface:
+# ```
+# using Makie
+# g(x,z,y) = (0.3*x^2+0.5z-0.3x+1.2*y^2-1.1)^2+(0.7*(y+0.5x)^2+y+1.2*z^2-1)^2-0.3
+# implicit_plot(g; xlims=(-2,2), ylims=(-2,2), zlims=(-3,3))
+# ```
 
 """
     implicit_plot!([plot], f)
@@ -80,6 +81,6 @@ implicit_plot!(f; kwargs...) = implicit_plot!(nothing, f, Val(nvariables(f)); kw
 implicit_plot!(p, f; kwargs...) = implicit_plot!(p, f, Val(nvariables(f)); kwargs...)
 
 include("2d.jl")
-include("3d.jl")
+# include("3d.jl")
 
 end # module
