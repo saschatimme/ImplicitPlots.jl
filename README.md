@@ -1,6 +1,6 @@
 # ImplicitPlots.jl
 
-Plot plane curve defined by an implicit function `f(x,y)=0`.
+Plot plane curves defined by an implicit function `f(x,y)=0`.
 
 ## Plane curves
 
