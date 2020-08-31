@@ -48,14 +48,14 @@ function ImplicitFunction(f)
 end
 
 @recipe function implicit(f::ImplicitFunction{2}; aspect_ratio = :equal, resolution = 400)
-    xlims --> (-2, 2)
-    ylims --> (-2, 2)
+    xlims --> (-5.0, 5.0)
+    xlims = plotattributes[:xlims]
+    ylims --> xlims
+    ylims = plotattributes[:ylims]
+
     linewidth --> 1
     grid --> true
     aspect_ratio := aspect_ratio
-
-    xlims = plotattributes[:xlims]
-    ylims = plotattributes[:ylims]
 
     rx = range(xlims[1]; stop = xlims[2], length = resolution)
     ry = range(ylims[1]; stop = ylims[2], length = resolution)
