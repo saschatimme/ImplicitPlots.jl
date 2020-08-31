@@ -13,8 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        version:
-          - '1.4'
+        julia-version:
+          - '1.5'
         os:
           - ubuntu-latest
         arch:

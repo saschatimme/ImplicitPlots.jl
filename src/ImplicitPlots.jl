@@ -1,35 +1,37 @@
 module ImplicitPlots
 
-export implicit_plot, implicit_plot!, implicit_curve!, implicit_surface!
+export implicit_plot, implicit_plot!, implicit_curve!, ImplicitFunction
 
-# import AbstractPlotting
-import ColorSchemes, Contour
-# import GeometryTypes, Meshing
-import Plots
-
+import Contour
+using RecipesBase
 import MultivariatePolynomials, StaticPolynomials
 import StaticArrays: SVector
 const MP = MultivariatePolynomials
 const SP = StaticPolynomials
 
-using DynamicPolynomials: @polyvar
-export @polyvar
+using Requires: @require
+function __init__()
+    @require HomotopyContinuation = "f213a82b-91d6-5c5d-acf7-10f1c761b327" include("hc.jl")
+end
 
-make_function(f::MP.AbstractPolynomialLike) = make_function(SP.Polynomial(f))
-function make_function(f::SP.Polynomial)
+struct ImplicitFunction{N,F}
+    f::F
+end
+ImplicitFunction{N}(f) where {N} = ImplicitFunction{N,typeof(f)}(f)
+(IF::ImplicitFunction{2})(x, y) = IF.f(x, y)
+(IF::ImplicitFunction{3})(x, y, z) = IF.f(x, y)
+
+ImplicitFunction(f::MP.AbstractPolynomialLike) = ImplicitFunction(SP.Polynomial(f))
+function ImplicitFunction(f::SP.Polynomial)
     if SP.nvariables(f) == 2
-        (x,y) -> f(SVector(x, y))
+        ImplicitFunction{2}((x, y) -> f(SVector(x, y)))
     elseif SP.nvariables(f) == 3
-        (x, y, z) -> f(SVector(x, y, z))
+        ImplicitFunction{3}((x, y, z) -> f(SVector(x, y, z)))
     else
-        throw(ArgumentError("Given polynomial is not in 2 or 3 variables."))
+        throw(ArgumentError("Given polynomial doesn't have 2 or 3 variables."))
     end
 end
-make_function(f) = f
-
-nvariables(f::MP.AbstractPolynomialLike) = MP.nvariables(f)
-nvariables(f::SP.Polynomial) = SP.nvariables(f)
-function nvariables(f::Function)
+function ImplicitFunction(f)
     nargs = 0
     try
         f(1.0, 1.0)
@@ -42,45 +44,44 @@ function nvariables(f::Function)
             throw(ArgumentError("Provided function does not accept 2 or 3 arguments."))
         end
     end
-    nargs
+    ImplicitFunction{nargs}(f)
 end
 
-"""
-    implicit_plot(f)
+@recipe function implicit(f::ImplicitFunction{2}; aspect_ratio = :equal, resolution = 400)
+    xlims --> (-5.0, 5.0)
+    xlims = plotattributes[:xlims]
+    ylims --> xlims
+    ylims = plotattributes[:ylims]
 
-Visualize the implicit curve or surface `f(x,y, [z]) = 0`. `f` is either a function or
-a polynomial following the `MultivariatePolynomials` package.
+    linewidth --> 1
+    grid --> true
+    aspect_ratio := aspect_ratio
 
-If `f` is a curve `Plots` is used, otherwise `AbstractPlotting`.
+    rx = range(xlims[1]; stop = xlims[2], length = resolution)
+    ry = range(ylims[1]; stop = ylims[2], length = resolution)
+    z = [f(x, y) for x in rx, y in ry]
 
-## Examples
+    nplot = plotattributes[:plot_object].n
+    lvl = Contour.contour(collect(rx), collect(ry), z, 0.0)
+    lines = Contour.lines(lvl)
+    !isempty(lines) || return p
 
-Curve:
-```
-f(x,y) = (x^4 + y^4 - 1) * (x^2 + y^2 - 2) + x^5 * y
-
-implicit_plot(f; xlims=(-2,2), ylims=(-2,2))
-```
-"""
-implicit_plot(f; kwargs...) = implicit_plot(f, Val(nvariables(f)); kwargs...)
-
-# 
-# Surface:
-# ```
-# using Makie
-# g(x,z,y) = (0.3*x^2+0.5z-0.3x+1.2*y^2-1.1)^2+(0.7*(y+0.5x)^2+y+1.2*z^2-1)^2-0.3
-# implicit_plot(g; xlims=(-2,2), ylims=(-2,2), zlims=(-3,3))
-# ```
-
-"""
-    implicit_plot!([plot], f)
-
-Visualize `f` into the given `plot`. See also [implicit_plot](@ref).
-"""
-implicit_plot!(f; kwargs...) = implicit_plot!(nothing, f, Val(nvariables(f)); kwargs...)
-implicit_plot!(p, f; kwargs...) = implicit_plot!(p, f, Val(nvariables(f)); kwargs...)
-
-include("2d.jl")
-# include("3d.jl")
+    clr = get(plotattributes, :linecolor, :dodgerblue)
+    for (k, line) in enumerate(lines)
+        xs, ys = Contour.coordinates(line)
+        @series begin
+            seriestype := :path
+            linecolor --> clr
+            if k > 1
+                label := ""
+            end
+            xs, ys
+        end
+    end
+end
+implicit_plot(f; kwargs...) = RecipesBase.plot(ImplicitFunction(f); kwargs...)
+implicit_plot!(f; kwargs...) = RecipesBase.plot!(ImplicitFunction(f); kwargs...)
+implicit_plot!(p::RecipesBase.AbstractPlot, f; kwargs...) =
+    RecipesBase.plot!(p, ImplicitFunction(f); kwargs...)
 
 end # module
