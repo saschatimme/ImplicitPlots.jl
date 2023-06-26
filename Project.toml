@@ -13,7 +13,7 @@ StaticPolynomials = "62e018b1-6e46-5407-a5a7-97d4fbcae734"
 
 [compat]
 Contour = "^0.5"
-MultivariatePolynomials = "^0.3.6, ^0.4"
+MultivariatePolynomials = "^0.3.6, ^0.4, ^0.5"
 RecipesBase = "1"
 Requires = "1"
 StaticArrays = "^0.12, 1"
